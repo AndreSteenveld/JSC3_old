@@ -1,0 +1,31 @@
+{
+  "name": "JSC3",
+  "version": "0.0.0",
+  "description": "An implementation of the C3 multiple inheritance algorithm for ES6",
+  "main": "C3.js",
+  "scripts": {
+    "test": "mocha --no-color --compilers js:babel/register ./test/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AndreSteenveld/JSC3.git"
+  },
+  "author": "Andre Steenveld",
+  "license": "LGPL3",
+  "bugs": {
+    "url": "https://github.com/AndreSteenveld/JSC3/issues"
+  },
+  "homepage": "https://github.com/AndreSteenveld/JSC3",
+  "jspm": {
+    "directories": {},
+    "dependencies": {},
+    "devDependencies": {
+      "babel": "npm:babel-core@^5.1.11",
+      "babel-runtime": "npm:babel-runtime@^5.1.11",
+      "core-js": "npm:core-js@^0.8.4"
+    }
+  },
+  "devDependencies": {
+    "chai": "^2.3.0"
+  }
+}
