@@ -27,28 +27,24 @@ function mixin( child, parent ){
 			// resolve as expected.
 			.reduce( 
 				( map, identifier ) => ( map[ identifier ] = Object.getOwnPropertyDescriptor( parent.prototype, identifier ) ) && map,
-				{ /* empty object to be filled with descriptions */ } 
+				Object.create( null )
 			)
 
 	);
 
 	return class extends child {
 
-		constructor( ){
-			super( ...Array.from( arguments ) );
-
-			// TODOC: Note about what constructors can and cannot return. This will work in the most cases
-			//        but the edgecases here would be:
-			//
-			//        - Constructors that modify their own prototype
-			//        - Constructors which create an instance but return an object.
-			//
-			//        How to deal with these scenarios?
-			//
-			// Object.assign( this, new parent( ...Array.from( arguments ) ) );
-			//console.log( parent.prototype.constructor.toString( ) );
-			return new ( class extends parent{ } )( ...Array.from( arguments ) );
-		}
+		// Ok we don't want the parent-supers to be called N times as this would mean the constructor of
+		// Object for example might be called a few times. A constructor can set an object in a specific
+		// state and calling it multiple times might be harmfull. So in the case that we are inheriting
+		// from a non-C3 class we will not call the constructor at all.
+		//
+		// According to the ES6 spec it isn't allowed to call a class/constructor as a function anymore
+		// which would have fixed our problem so we could to something along the lines of:
+		//
+		//		parent.call( this, ...Array.from( arguments ) );
+		//
+		//Object.assign( this, Object.create( Object.getPrototypeOf( parent ) ) );
 
 	};
 
@@ -133,17 +129,20 @@ export default function( ...supers ){
 		static get supers( ){ return Array.from( supers ); }
 
 		constructor( { base = null } = { }, ...rest ){
-			
-			let args = base === null ? Array.from( arguments ) : rest;
 
+			let args = base === null ? Array.from( arguments ) : rest;
+			
 			super( ...args );
-		
+
+			//console.log( bases.map( b => b.name ).join( ", " ) );
+
 			for( let base of bases )
 				typeof this[ base.name ] === "function" && this[ base.name ]( ...args );
 
 			base !== null
 				&& typeof base.prototype[ base.name ] === "function" 
 				&& base.prototype[ base.name ].apply( this, args );
+
 		}
 	};
 

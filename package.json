@@ -4,7 +4,8 @@
   "description": "An implementation of the C3 multiple inheritance algorithm for ES6",
   "main": "C3.js",
   "scripts": {
-    "test": "mocha --no-color --compilers js:babel/register ./test/"
+    "test-prod": "mocha --reporter nyan --compilers js:babel/register ./test/",
+    "test": "mocha --reporter list --compilers js:babel/register ./test/"
   },
   "repository": {
     "type": "git",
