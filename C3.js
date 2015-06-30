@@ -1,52 +1,29 @@
 
 function mixin( child, parent ){
 
-	Object.defineProperties( 
-
-		child.prototype, 
-	
-		[ ]
-			.concat( Object.getOwnPropertyNames( parent.prototype ) )
-			
-			// TODO: I am not completly sure what O.getOwnPropertyDescriptor will do when it is fed a symbol
-			//       and because currently nothing really implements symbols properly we are going to leave
-			//       this untill a later time.
-			// .concat( Object.getOwnPropertySymbols( parent.prototype ) )
+	[ ]
+		.concat( Object.getOwnPropertyNames( parent.prototype ) )
 		
-			//
-			// We filter out the constructor because this one is magically done by either the JS engine,
-			// babel, traceur, etc. We will define our own constructor which initialize the parent and
-			// extend the instance we are creating with stuff from that object.
-			//
-			// TODOC: All the edgecases we are not catching by executing the parent constructor out of
-			//        scope and what we can do against it. 
-			//
-			.filter( ( identifier ) => identifier !== "constructor" )
-
-			// Now create a map with which we can extend our child.prototype so it all the super calls will
-			// resolve as expected.
-			.reduce( 
-				( map, identifier ) => ( map[ identifier ] = Object.getOwnPropertyDescriptor( parent.prototype, identifier ) ) && map,
-				Object.create( null )
-			)
-
-	);
-
-	return class extends child {
-
-		// Ok we don't want the parent-supers to be called N times as this would mean the constructor of
-		// Object for example might be called a few times. A constructor can set an object in a specific
-		// state and calling it multiple times might be harmfull. So in the case that we are inheriting
-		// from a non-C3 class we will not call the constructor at all.
+		// TODO: I am not completly sure what O.getOwnPropertyDescriptor will do when it is fed a symbol
+		//       and because currently nothing really implements symbols properly we are going to leave
+		//       this untill a later time.
+		// .concat( Object.getOwnPropertySymbols( parent.prototype ) )
+	
 		//
-		// According to the ES6 spec it isn't allowed to call a class/constructor as a function anymore
-		// which would have fixed our problem so we could to something along the lines of:
+		// We filter out the constructor because this one is magically done by either the JS engine,
+		// babel, traceur, etc. We will define our own constructor which initialize the parent and
+		// extend the instance we are creating with stuff from that object.
 		//
-		//		parent.call( this, ...Array.from( arguments ) );
-		//
-		//Object.assign( this, Object.create( Object.getPrototypeOf( parent ) ) );
+		.filter( ( identifier ) => identifier !== "constructor" )
+		.forEach( ( identifier ) => {
 
-	};
+			let descriptor = Object.getOwnPropertyDescriptor( parent.prototype, identifier );
+
+			Object.defineProperty( child.prototype, identifier, descriptor );					
+
+		});
+
+	return class extends child { };
 
 }
 
@@ -130,11 +107,30 @@ export default function( ...supers ){
 
 		constructor( { base = null } = { }, ...rest ){
 
-			let args = base === null ? Array.from( arguments ) : rest;
+			let args        = base === null ? Array.from( arguments ) : rest,
+				args_length = args.length;
 			
-			super( ...args );
-
-			//console.log( bases.map( b => b.name ).join( ", " ) );
+			// Babel makes a funny when trying to spread arguments over a super call, so just to prevent
+			// everything blowing up while ES6 is nopt properly implmented yet we will spread the arguments
+			// by hand. If there are more then 16 arguments (which is a A LOT!) everything will just blow up.			
+			args_length ===  0 ? super( )
+				: args_length ===  1 ? super( args[ 1 ] )
+				: args_length ===  2 ? super( args[ 1 ], args[ 2 ] )
+				: args_length ===  3 ? super( args[ 1 ], args[ 2 ], args[ 3 ] )
+				: args_length ===  4 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ] )
+				: args_length ===  5 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ] )
+				: args_length ===  6 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ] )
+				: args_length ===  7 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ] )
+				: args_length ===  8 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ] )
+				: args_length ===  9 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ] )
+				: args_length === 10 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ], args[ 10 ] )
+				: args_length === 11 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ], args[ 10 ], args[ 11 ] )
+				: args_length === 12 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ], args[ 10 ], args[ 11 ], args[ 12 ] )
+				: args_length === 13 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ], args[ 10 ], args[ 11 ], args[ 12 ], args[ 13 ] )
+				: args_length === 14 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ], args[ 10 ], args[ 11 ], args[ 12 ], args[ 13 ], args[ 14 ] )
+				: args_length === 15 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ], args[ 10 ], args[ 11 ], args[ 12 ], args[ 13 ], args[ 14 ], args[ 15 ] )
+				: args_length === 16 ? super( args[ 1 ], args[ 2 ], args[ 3 ], args[ 4 ], args[ 5 ], args[ 6 ], args[ 7 ], args[ 8 ], args[ 9 ], args[ 10 ], args[ 11 ], args[ 12 ], args[ 13 ], args[ 14 ], args[ 15 ], args[ 16 ] )
+				: null;
 
 			for( let base of bases )
 				typeof this[ base.name ] === "function" && this[ base.name ]( ...args );
