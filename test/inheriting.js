@@ -1,4 +1,4 @@
-import C3 from "../C3";
+import { c3 as C3 } from "../C3";
 import { assert as assert } from "chai";
 
 describe( "When inheriting using C3 -", ( ) => {

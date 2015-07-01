@@ -1,4 +1,4 @@
-import C3 from "../C3";
+import { c3 as C3 } from "../C3";
 import { assert as assert } from "chai";
 
 describe( "Calling the super -", ( ) => {
@@ -72,20 +72,18 @@ describe( "Calling the super -", ( ) => {
 	//
 	class K1 extends C3( A, B, C ){ 
 		K1( a ){ a.push( "K1#K1" ); }
-		method( a ){ super.method( a ); a.push( "K1#method" ); }
-		constructor( a ){ super({ base : K1 }, a ); }			
+		method( a ){ this.super.method( a ); a.push( "K1#method" ); }			
 	}
 
 	class K2 extends C3( D, B, E ){ 
 		K2( a ){ a.push( "K2#K2" ); }
-		method( a ){ super.method( a ); a.push( "K2#method" ); }
-		constructor( a ){ super({ base : K2 }, a ); }		
+		method( a ){ this.super.method( a ); a.push( "K2#method" ); }	
 	}
 
 	class K3 extends C3( D, A ){ 
 		K3( a ){ a.push( "K3#K3" ); }
-		method( a ){ super.method( a ); a.push( "K3#method" ); }
-		constructor( a ){ super({ base : K3 }, a ); }		
+		method( a ){ this.super.method( a ); a.push( "K3#method" ); }
+
 	}
 
 	//
@@ -93,8 +91,7 @@ describe( "Calling the super -", ( ) => {
 	//
 	class Z extends C3( K1, K2, K3 ){ 
 		Z( a ){ a.push( "Z#Z" ); }
-		method( a ){ super.method( a ); a.push( "Z#method" ); }
-		constructor( a ){ super({ base : Z }, a ); }		
+		method( a ){ this.super.method( a ); a.push( "Z#method" ); }
 	}
 
 	it( 
